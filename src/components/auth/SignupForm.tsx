@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { authUtils } from '../../utils/auth';
+import { validateEmail, validatePassword, validateName } from '../../utils/validation';
 import type { User } from '../../types';
 
 interface FormData {
@@ -36,24 +37,25 @@ const SignupForm: React.FC<SignupFormProps> = ({ onToggleMode }) => {
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
 
-    if (!formData.name.trim()) {
-      newErrors.name = 'Name is required';
-    } else if (formData.name.trim().length < 2) {
-      newErrors.name = 'Name must be at least 2 characters';
+    // Validate name
+    const nameError = validateName(formData.name);
+    if (nameError) {
+      newErrors.name = nameError;
     }
 
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
+    // Validate email
+    const emailError = validateEmail(formData.email);
+    if (emailError) {
+      newErrors.email = emailError;
     }
 
-    if (!formData.password.trim()) {
-      newErrors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
+    // Validate password with strong requirements
+    const passwordValidation = validatePassword(formData.password);
+    if (!passwordValidation.isValid) {
+      newErrors.password = passwordValidation.errors[0]; // Show first error
     }
 
+    // Validate password confirmation
     if (!formData.confirmPassword.trim()) {
       newErrors.confirmPassword = 'Please confirm your password';
     } else if (formData.password !== formData.confirmPassword) {
@@ -88,7 +90,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onToggleMode }) => {
 
       // Mock successful signup response
       const newUser: User = {
-        id: Math.random().toString(36).substring(2),
+        id: crypto.randomUUID(),
         name: formData.name,
         isAnonymous: false,
       };

@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
 import type { User, AuthState } from '../types';
 
 interface AuthActions {
@@ -10,28 +9,17 @@ interface AuthActions {
 
 type AuthStore = AuthState & AuthActions;
 
-export const useAuthStore = create<AuthStore>()(
-  persist(
-    (set) => ({
-      user: null,
-      token: null,
-      isLoading: false,
+export const useAuthStore = create<AuthStore>()((set) => ({
+  user: null,
+  token: null,
+  isLoading: false,
 
-      login: (user: User, token: string) =>
-        set({ user, token, isLoading: false }),
+  login: (user: User, token: string) =>
+    set({ user, token, isLoading: false }),
 
-      logout: () =>
-        set({ user: null, token: null, isLoading: false }),
+  logout: () =>
+    set({ user: null, token: null, isLoading: false }),
 
-      setLoading: (isLoading: boolean) =>
-        set({ isLoading }),
-    }),
-    {
-      name: 'auth-storage',
-      partialize: (state) => ({
-        user: state.user,
-        token: state.token
-      }),
-    }
-  )
-);
+  setLoading: (isLoading: boolean) =>
+    set({ isLoading }),
+}));

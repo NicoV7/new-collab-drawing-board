@@ -81,10 +81,11 @@ export const authUtils = {
 
   // Generate anonymous user data
   generateAnonymousUser(): User {
-    const randomId = Math.random().toString(36).substring(2, 10);
+    const randomId = crypto.randomUUID();
+    const shortId = randomId.substring(0, 8);
     return {
       id: `anon_${randomId}`,
-      name: `Guest ${randomId}`,
+      name: `Guest ${shortId}`,
       isAnonymous: true,
     };
   },

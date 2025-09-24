@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { authUtils } from '../../utils/auth';
+import { validateEmail } from '../../utils/validation';
 import type { User } from '../../types';
 
 interface FormData {
@@ -30,16 +31,16 @@ const LoginForm: React.FC<LoginFormProps> = ({ onToggleMode }) => {
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
 
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
+    // Validate email
+    const emailError = validateEmail(formData.email);
+    if (emailError) {
+      newErrors.email = emailError;
     }
 
+    // Validate password - for login, we just check if it's provided
+    // (we don't enforce complexity on login, only signup)
     if (!formData.password.trim()) {
       newErrors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
     }
 
     setErrors(newErrors);
@@ -70,7 +71,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onToggleMode }) => {
 
       // Mock successful login response
       const mockUser: User = {
-        id: Math.random().toString(36).substring(2),
+        id: crypto.randomUUID(),
         name: formData.email.split('@')[0],
         isAnonymous: false,
       };

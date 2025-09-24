@@ -3,6 +3,7 @@ import { AuthProvider } from './contexts/AuthProvider';
 import ProtectedRoute from './components/ProtectedRoute';
 import { HomePage, LoginPage, RoomPage } from './pages';
 import DashboardPage from './pages/DashboardPage';
+import ToastContainer from './components/ui/ToastContainer';
 
 function App() {
   return (
@@ -31,7 +32,7 @@ function App() {
               }
             />
             <Route
-              path="/room/:roomId"
+              path="/room/:roomCode"
               element={
                 <ProtectedRoute>
                   <RoomPage />
@@ -40,6 +41,7 @@ function App() {
             />
           </Routes>
         </div>
+        <ToastContainer />
       </Router>
     </AuthProvider>
   );
